@@ -17,14 +17,16 @@ jobs:
       
     - name: Login to docker registry
       run: docker login ghcr.io --username=hadrien-ci --password=${{ secrets.GITHUB_TOKEN }}
+    - name: Pull latest image for cache
+      run: docker pull ghcr.io/hadrien-test/hadrien-ci:latest
 
     - name: Build and push image
-      run: docker build -t ghcr.io/hadrien-test/hadrien-ci:latest .
+      run: docker build --cache-from ghcr.io/hadrien-test/hadrien-ci:latest -t ghcr.io/hadrien-test/hadrien-ci:latest .
       
        #   - name: Trigger webhook octopus/webhook?token=$SECRET-TOKEN
           
-    - name: Translate to kustomize
-      run: apt-get install kustomize && kustomize -f docker-compose.yml -o kustomize/
+   # - name: Translate to kustomize
+    #  run: apt-get install kustomize && kustomize -f docker-compose.yml -o kustomize/
         
    # - name:  Copy files into preprod
    #   run: rsync /app/kustomize root@preprod:/app/kustomize
