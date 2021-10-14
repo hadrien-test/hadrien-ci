@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Login to docker registry
+      run: docker login ghcr.io --username=hadrien-ci --password=${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push image
+      run: docker build -t ghcr.io/hadrien-test/hadrien-ci:latest .
+      
+       #   - name: Trigger webhook octopus/webhook?token=$SECRET-TOKEN
+          
+    - name: Translate to kustomize
+      run: apt-get install kustomize && kustomize -f docker-compose.yml -o kustomize/
+        
+   # - name:  Copy files into preprod
+   #   run: rsync /app/kustomize root@preprod:/app/kustomize
+          
+  #  - name: SSH into preprod
+   #   run: ssh target -c kubectl apply -f kustomize
