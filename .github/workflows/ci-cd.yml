@@ -20,13 +20,21 @@ jobs:
     - name: Pull latest image for cache
       run: docker pull ghcr.io/hadrien-test/hadrien-ci:latest
 
-    - name: Build and push image
+    - name: Build image
       run: docker build --cache-from ghcr.io/hadrien-test/hadrien-ci:latest -t ghcr.io/hadrien-test/hadrien-ci:latest .
       
        #   - name: Trigger webhook octopus/webhook?token=$SECRET-TOKEN
           
-   # - name: Translate to kustomize
-    #  run: apt-get install kustomize && kustomize -f docker-compose.yml -o kustomize/
+    - name: Push image
+      run: docker push ghcr.io/hadrien-test/hadrien-ci:latest
+      
+    - name: Translate to kustomize
+      run: |-
+            curl -L https://github.com/kubernetes/kompose/releases/download/v1.24.0/kompose-linux-amd64 -o kompose
+
+            chmod +x kompose
+            ./kustomize -f docker-compose.yml -o kustomize/
+            cat kustomize/*
         
    # - name:  Copy files into preprod
    #   run: rsync /app/kustomize root@preprod:/app/kustomize
